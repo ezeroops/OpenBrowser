@@ -9,9 +9,9 @@ on:
   workflow_dispatch:
     inputs:
       release_tag:
-        description: 'Release tag to create, for example v1.0.22'
+        description: 'Release tag to create, for example v1.0.23'
         required: true
-        default: 'v1.0.22'
+        default: 'v1.0.23'
       prerelease:
         description: 'Mark the GitHub Release as a prerelease'
         required: false
@@ -42,7 +42,7 @@ env:
 
     ### 中文
 
-    - **版本同步与规范**：统一更新版本为 **v1.0.22**，严格同步应用界面显示、npm 配置、Windows 可执行文件元数据与项目文档。
+    - **版本同步与规范**：统一更新版本为 **v1.0.23**，严格同步应用界面显示、npm 配置、Windows 可执行文件元数据与项目文档。
     - **网络与代理防护**：修复代理加载配置，杜绝特定场景下静默回退直连泄漏真实 IP；规范 Client Hints 报头装配顺序以对齐 Chromium 原生网络栈。
     - **内核与自动化防护**：清理命令行自动化调试开关（`enable-automation`），保持 `navigator.webdriver` 原生状态；对齐启动配置模板 User-Agent 与真实内核版本（148.0.7778.165）。
     - **作用域与跨域隔离**：完善 Web Worker 嵌套 auto-attach 注入时序，确保 Worker 内部 OffscreenCanvas 与主页面指纹严格一致；优化跨 Realm 原型方法与错误对象一致性。
@@ -51,7 +51,7 @@ env:
 
     ### English
 
-    - **Version Alignment**: Formally updated to **v1.0.22**, synchronized across UI display, npm packages, Windows PE metadata, and documentation.
+    - **Version Alignment**: Formally updated to **v1.0.23**, synchronized across UI display, npm packages, Windows PE metadata, and documentation.
     - **Network & Proxy Hardening**: Fixed proxy launcher configuration to prevent fallback direct connections; restored canonical Chromium wire order for Client Hints headers.
     - **Kernel & Automation Hardening**: Removed automation flags to maintain native `navigator.webdriver` behavior; aligned kernel template User-Agent with the active kernel version (148.0.7778.165).
     - **Worker & Cross-Realm Isolation**: Fixed nested auto-attach timing for Web Workers, ensuring OffscreenCanvas WebGL strictly matches main frame persona GPU; improved cross-realm prototype consistency.
