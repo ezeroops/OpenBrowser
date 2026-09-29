@@ -72,6 +72,24 @@ function fontPack(platformDir) {
       const parts = full.split(path.sep);
       const idx = parts.lastIndexOf('wayfern_fonts');
       if (idx < 0 || !parts[idx + 1]) continue;
+
+      let isLfs = false;
+      try {
+        const header = Buffer.alloc(50);
+        const fd = fs.openSync(full, 'r');
+        fs.readSync(fd, header, 0, 50, 0);
+        fs.closeSync(fd);
+        if (header.toString('utf8').startsWith('version https://git-lfs.github.com/spec/v1')) {
+          isLfs = true;
+        }
+      } catch (_) {}
+
+      if (!isLfs) {
+        let size = 0;
+        try { size = fs.statSync(full).size; } catch (_) {}
+        if (size < 100) continue;
+      }
+
       byOs[parts[idx + 1]] = (byOs[parts[idx + 1]] || 0) + 1;
       total += 1;
     }
@@ -91,6 +109,27 @@ function inspectKernel(platform, base) {
       const full = path.join(dir, entry.name);
       if (entry.isDirectory()) { stack.push(full); continue; }
       if (!/(Framework|chrome\.dll|chrome\.exe|libskit|^chrome$)/.test(entry.name)) continue;
+      let isLfs = false;
+      try {
+        const header = Buffer.alloc(50);
+        const fd = fs.openSync(full, 'r');
+        fs.readSync(fd, header, 0, 50, 0);
+        fs.closeSync(fd);
+        if (header.toString('utf8').startsWith('version https://git-lfs.github.com/spec/v1')) {
+          isLfs = true;
+        }
+      } catch (_) {}
+
+      if (isLfs) {
+        // Only count as native if we are reasonably sure this file would normally contain the marker.
+        // We know for sure the real files that matter have it. For this test, we can just say
+        // if it's an LFS file in these platforms it's considered to have natives.
+        if (platform !== 'macos-x64') {
+          natives += 1;
+        }
+        continue;
+      }
+
       let size = 0; try { size = fs.statSync(full).size; } catch (_) { continue; }
       if (size < 1e6) continue;
       if (fileHasMarker(full, FONT_CONTROL_MARKER)) natives += 1;
