@@ -235,18 +235,23 @@ async function main() {
   {
     const templatePath = path.join(__dirname, '../kernels/macos-x64/init_template.json');
     if (fs.existsSync(templatePath)) {
-      const template = loadInitObject(await fsp.readFile(templatePath));
-      assert.ok(template, 'bundled init template must parse');
-      assert.ok(template.token && typeof template.token === 'object',
-        'template must carry a token blob of the shape the platform service requires');
-      assert.ok(!template.token.user_id, 'template must not carry an account-bound token');
-      assert.deepStrictEqual(template.native_messaging, [],
-        'template must not carry a native-messaging allowlist for extensions this build does not ship');
-      assert.deepStrictEqual(template.async_proxy_data_exception_list, [],
-        'template must not carry a proxy bypass list');
-      const serialized = JSON.stringify(template);
-      assert.ok(!/env-kit/i.test(serialized), 'template must not carry inherited runtime names');
-      assert.ok(!/52\.80\.142\.150/.test(serialized), 'template must not carry fixed bypass hosts');
+      const rawContent = await fsp.readFile(templatePath, 'utf8');
+      if (rawContent.startsWith('version https://git-lfs.github.com/spec/v1')) {
+        console.log(`Skipping bundled init template check: ${templatePath} is an unsmudged LFS pointer`);
+      } else {
+        const template = loadInitObject(await fsp.readFile(templatePath));
+        assert.ok(template, 'bundled init template must parse');
+        assert.ok(template.token && typeof template.token === 'object',
+          'template must carry a token blob of the shape the platform service requires');
+        assert.ok(!template.token.user_id, 'template must not carry an account-bound token');
+        assert.deepStrictEqual(template.native_messaging, [],
+          'template must not carry a native-messaging allowlist for extensions this build does not ship');
+        assert.deepStrictEqual(template.async_proxy_data_exception_list, [],
+          'template must not carry a proxy bypass list');
+        const serialized = JSON.stringify(template);
+        assert.ok(!/env-kit/i.test(serialized), 'template must not carry inherited runtime names');
+        assert.ok(!/52\.80\.142\.150/.test(serialized), 'template must not carry fixed bypass hosts');
+      }
     }
   }
 
